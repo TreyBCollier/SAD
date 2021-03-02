@@ -23,7 +23,7 @@ import colours from "../config/colours";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-class SignUpScreen extends React.Component {
+class SearchStocks extends React.Component {
   constructor(props) {
     super(props);
 
@@ -235,4 +235,4 @@ const barlevels = [
   },
 ];
 
-export default SignUpScreen;
+export default SearchStocks;

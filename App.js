@@ -17,7 +17,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 import SignUpScreen from "./app/screens/SignUpScreen";
-import engFre from "./app/screens/SearchStocks";
+import searchStocks from "./app/screens/SearchStocks";
 import colours from "./app/config/colours";
 
 const windowWidth = Dimensions.get("window").width;
@@ -40,7 +40,7 @@ class StartScreen extends React.Component {
 
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => this.props.navigation.navigate("EngToFre")}
+              onPress={() => this.props.navigation.navigate("searchStocks")}
               style={[styles.buttonContainer, styles.signupBtn]}
             >
               <Text style={styles.appButtonText}>Search Stocks</Text>
@@ -75,8 +75,8 @@ const AppNavigator = createStackNavigator({
       headerShown: false,
     },
   },
-  EngToFre: {
-    screen: engFre,
+  searchStocks: {
+    screen: searchStocks,
     navigationOptions: {
       headerShown: false,
     },
