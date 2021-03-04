@@ -10,13 +10,17 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ActivityIndicator,
+  Alert
 } from "react-native";
-import { createAppContainer } from "react-navigation";
-import { createStackNavigator } from "react-navigation-stack";
-import { Button, Card, Input, CheckBox, Overlay, SearchBar } from "react-native-elements";
+import { Button, SearchBar } from "react-native-elements";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
 import colours from "../config/colours";
+import tickers from "./Ticker"
+import names from "./Name"
+import { isThisTypeNode } from "typescript";
+
+
 
 
 
@@ -28,17 +32,85 @@ class SearchStocks extends React.Component {
     super(props);
 
     this.state = {
-      ticker: null,
-      search: '',
+      search: '',   
+      ticker: [],   
+      name: [],   
+      test: ["1", "2", "3"],
       
     };
+
+    this.tickerholder = [];
+    this.nameholder = [];
+    this.filteredArray = [];
+
+    
 
     
   }
 
+  componentDidMount(){
+    this.loadData()
+  }
+
+  loadData = async () => {    
+    var data1 = tickers.split(', ');
+    var data2 = names.split(', ');
+  
+
+    this.setState({
+      ticker: data1, 
+      name: data2
+    })
+
+    this.tickerholder = data1; 
+    this.nameholder = data2; 
+
+    
+    
+    
+    
+  };
+
+  filterlist(text) {
+    var filteredList = this.nameholder.filter(name => name.includes(text));
+    var i;
+    var j;
+    var newList = []
+    for (i = 0; i < this.nameholder.length; i++) { 
+      for(j = 0; j < filteredList.length; j++){
+        if(this.nameholder[i] == filteredList[j]){
+          text = this.tickerholder[i] + " " + this.nameholder[i];
+          newList.push(text)
+        }
+      }
+      
+
+      
+    }
+    this.filteredArray = newList;
+  };
+
+  SampleFunction=(item)=>{
+ 
+    Alert.alert(item);
+ 
+  }
+3
+4
+5
+ 
+
+  
+
+ 
+
 
   render() {
+    this.arrayholder = [];
+
+    
     return (
+      
       <SafeAreaView
         style={{ flex: 1, alignContent: "center", justifyContent: "center", backgroundColor: 'white' }}
       >
@@ -74,7 +146,6 @@ class SearchStocks extends React.Component {
           >
             <Text
               style={{
-                marginRight: "10%",
                 fontSize: RFPercentage(3),
               }}
             >
@@ -85,16 +156,27 @@ class SearchStocks extends React.Component {
 
           
             <View style={styles.searchBar}>
-              <SearchBar
-                style= {{
-                  width: "100%",
-                
-                }}
-                placeholder="Ticker"
-                platform = "ios"
-                value={this.state.search}
-                onChangeText={(text) => this.setState({ search: text })}
-              />
+
+            
+              
+            <SearchBar
+              placeholder="Ticker"
+              platform = "ios"
+              value={this.state.search}
+              onChangeText={(text) => {
+                this.filterlist(text)
+                this.setState({ search: text })
+              
+              }}
+
+
+            />
+              
+            </View>
+            <View>
+              { this.filteredArray.map((item, key)=>(
+                <Text key={key} style={styles.stockName} onPress={ this.SampleFunction.bind(this, item) }> { item } </Text>)
+              )}
             </View>
             
          
@@ -108,6 +190,11 @@ class SearchStocks extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  stockName: {
+    fontSize: 20,
+    paddingTop: 20,
+    textAlign: "left",
+  },
   main: {
     flex: 1,
   },
