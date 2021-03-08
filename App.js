@@ -18,6 +18,7 @@ import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 import SignUpScreen from "./app/screens/SignUpScreen";
 import searchStocks from "./app/screens/SearchStocks";
+import Stock from "./app/screens/Stock";
 import colours from "./app/config/colours";
 
 const windowWidth = Dimensions.get("window").width;
@@ -77,6 +78,12 @@ const AppNavigator = createStackNavigator({
   },
   searchStocks: {
     screen: searchStocks,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  Stock: {
+    screen: Stock,
     navigationOptions: {
       headerShown: false,
     },

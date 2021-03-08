@@ -16,8 +16,8 @@ import { Button, SearchBar } from "react-native-elements";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
 import colours from "../config/colours";
-import tickers from "./Ticker"
-import names from "./Name"
+import tickers from "../files/Ticker"
+import names from "../files/Name"
 import { isThisTypeNode } from "typescript";
 
 
@@ -41,7 +41,9 @@ class SearchStocks extends React.Component {
 
     this.tickerholder = [];
     this.nameholder = [];
-    this.filteredArray = [];
+    this.filteredNameArray = [];
+    this.filteredTickerArray = [];
+
 
     
 
@@ -75,19 +77,28 @@ class SearchStocks extends React.Component {
     var filteredList = this.nameholder.filter(name => name.includes(text));
     var i;
     var j;
-    var newList = []
+    var newNameList = []
+    var newTickerList = []
+    var emptyList = []
     for (i = 0; i < this.nameholder.length; i++) { 
       for(j = 0; j < filteredList.length; j++){
         if(this.nameholder[i] == filteredList[j]){
-          text = this.tickerholder[i] + " " + this.nameholder[i];
-          newList.push(text)
+          var nameText = this.nameholder[i];
+          var tickerText = this.tickerholder[i];
+          newNameList.push(nameText)
+          newTickerList.push(tickerText)
         }
       }
       
 
       
     }
-    this.filteredArray = newList;
+    this.filteredNameArray = newNameList;
+    this.filteredTickerArray = newTickerList;
+    if(text.length < 1){
+      this.filteredNameArray = emptyList
+      this.filteredTickerArray = emptyList
+    }
   };
 
   SampleFunction=(item)=>{
@@ -174,8 +185,48 @@ class SearchStocks extends React.Component {
               
             </View>
             <View>
-              { this.filteredArray.map((item, key)=>(
-                <Text key={key} style={styles.stockName} onPress={ this.SampleFunction.bind(this, item) }> { item } </Text>)
+              { this.filteredNameArray.map((item, key)=>(
+                <TouchableOpacity 
+                  style={styles.listItem}
+                  onPress={() => this.props.navigation.navigate("Stock")}
+                >
+                  
+                    <View>
+                    <Text 
+                    style={styles.stockTicker} > 
+                      {this.filteredTickerArray[key] }
+                      
+                    </Text>
+                    <View style={{
+                          width: "100%",
+                          position: "absolute",
+                          alignItems: "flex-end",
+                          marginTop: "5%"
+                          
+                          
+                        }}>
+                    <Icon
+                        color="black"
+                        name="arrow-right"
+                        size={25}
+                      />
+                    </View>
+                  
+                  <Text 
+                    style={styles.stockName} > 
+                      { item }
+                      
+                    </Text>
+                    <View
+                      style={{
+                        borderBottomColor: 'grey',
+                        borderBottomWidth: 1,
+                        marginTop: "2%",
+                        marginBottom: "5%",
+                      }}
+                    />
+                    </View>
+                  </TouchableOpacity>)
               )}
             </View>
             
@@ -190,10 +241,21 @@ class SearchStocks extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  listItem: {
+    width: "100%",
+  },
+  stockTicker: {
+    fontSize: 30,
+    textAlign: "left",
+    width: "100%",
+  },
   stockName: {
     fontSize: 20,
-    paddingTop: 20,
+    width: "80%",
+    paddingTop: 5,
     textAlign: "left",
+    color: "grey"
+
   },
   main: {
     flex: 1,
