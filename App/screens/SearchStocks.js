@@ -19,6 +19,7 @@ import colours from "../config/colours";
 import tickers from "../files/Ticker"
 import names from "../files/Name"
 import { isThisTypeNode } from "typescript";
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -188,7 +189,7 @@ class SearchStocks extends React.Component {
               { this.filteredNameArray.map((item, key)=>(
                 <TouchableOpacity 
                   style={styles.listItem}
-                  onPress={() => this.props.navigation.navigate("Stock")}
+                  onPress={() => this.props.navigation.navigate("Stock", {name: item, ticker: this.filteredTickerArray[key]},)}
                 >
                   
                     <View>

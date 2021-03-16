@@ -5,8 +5,8 @@ import {
   View,
   ScrollView,
   Dimensions,
+  TouchableOpacity,
   SafeAreaView,
-  
 } from "react-native";
 import { Button, SearchBar } from "react-native-elements";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
@@ -17,10 +17,35 @@ import { Table, Row, Rows } from 'react-native-table-component';
 import stockData from "../files/data.json"
 
 
+const getCurrentDate=()=>{
+
+  var date = new Date().getDate();
+  var month = new Date().getMonth() + 1;
+  var year = new Date().getFullYear();
+
+  //Alert.alert(date + '-' + month + '-' + year);
+  // You can turn it in to your desired format
+  return date + '/' + month + '/' + year;//format: dd-mm-yyyy;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
+var array = [];
+
 
 class Stock extends React.Component {
   constructor(props) {
@@ -29,13 +54,17 @@ class Stock extends React.Component {
     this.state = {
       data: [],
       tablePage: 0,
+
+      prices: []
       
     };
     this.data = [];
     this.stockArray = [];
+    this.dataJSON
+    this.priceArray = [];
+    this.currentPrice = 0;
   }
 
-  
   getData(){
     var txt =  JSON.stringify(require("../files/data.json"))
 
@@ -44,9 +73,10 @@ class Stock extends React.Component {
       var result = JSON.parse(txt);
       var stocks = result.stocks
       this.data = stocks
+      this.dataJSON = stocks[1]
 
       this.formatJSON()
-      console.log(this.data)
+
 
       return this.data;
   }
@@ -64,6 +94,8 @@ class Stock extends React.Component {
     this.data = newArray;
 
   }
+
+  
   
 
   
@@ -71,12 +103,86 @@ class Stock extends React.Component {
 
   render() {
 
-    // var data = this.users.map(function(item) {
-    //   return {
-    //     key: item.ticker,
-    //     label: item.close
-    //   };
-    // });
+    function sleep(ms) {
+      return new Promise(
+        resolve => setTimeout(resolve, ms)
+      );
+    }
+    
+    function query(){
+      var ticker = "AAPL";
+      var name = "THIS NIIIIII";
+      
+      var url = "https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/spark?symbols=" + ticker + "&range=2y&interval=1d"
+      var apiResults = "";
+      var apiArray = [];
+      var apiArrayPrice = [];
+      const data = null;
+      const xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === this.DONE) {
+        
+          this.ticker = ticker;
+          this.name = name;
+
+          
+          
+          var result = JSON.parse(this.responseText);
+          
+        
+          var tempApiResults = result[ticker]['close']
+          apiResults = ""
+          var count = 0
+          tempApiResults.forEach(close => {
+            var c = close
+            apiResults = apiResults + " Day " + count  + " - " + c + "\n"
+            apiArray.push(getCurrentDate() + " - " + c)
+            apiArrayPrice.push(c)
+            count = count + 1
+          });
+          this.priceArray=apiArrayPrice;
+          array = apiArrayPrice
+          
+        
+          //saveAsJSON(tempApiResults, "APPL");
+
+          // This needs saving 
+          
+        }
+      });
+      xhr.open("GET", url);
+      xhr.setRequestHeader("x-rapidapi-key", "de60c04d78msh37566ebd95793e5p1ae017jsnd330a739399f");
+      xhr.setRequestHeader("x-rapidapi-host", "yahoo-finance-low-latency.p.rapidapi.com");
+      xhr.send(data);
+      
+    
+    }
+
+     function getPrice() {
+      console.log("TEST 1")
+       query();
+      
+      console.log(array)
+      return array[0]
+
+    }
+
+    // async function getPrice() {
+    //   console.log("TEST 1")
+    //   await query();
+      
+    //   console.log(array)
+    //   return array[0]
+
+    // }
+
+    
+    
+    
+    
+    const { params } = this.props.navigation.state;
+    
   
     
     return (
@@ -116,43 +222,28 @@ class Stock extends React.Component {
             }}
           >
             <Text style={styles.stockName}>
-              [STOCK NAME]
+            {params.ticker}{"\n"}{params.name}
             </Text>
           </View>
 
-          
             <View style={styles.searchBar}>
             <Text>
-              Previous Close
+              Current Price
             </Text>
             <Text style={styles.previousClose}>
-              42.49
-              
+              {getPrice()}
             </Text>
-
-            
-        
             </View>
 
             <View>
               <Table>
                 <Row data = {["Ticker", "Price"]}/>
                 <Rows data = {this.getData()}/>
-              
-                
-                
               </Table>
-                        
-                        
-                   
-                   
             </View>
+
             
             
-         
-          
-          
-          
         </ScrollView>
       </SafeAreaView>
     );
