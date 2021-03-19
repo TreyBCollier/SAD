@@ -19,6 +19,7 @@ import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import SignUpScreen from "./app/screens/SignUpScreen";
 import searchStocks from "./app/screens/SearchStocks";
 import Stock from "./app/screens/Stock";
+import Watchlist from "./app/screens/Watchlist";
 import colours from "./app/config/colours";
 
 const windowWidth = Dimensions.get("window").width;
@@ -49,6 +50,7 @@ class StartScreen extends React.Component {
 
             <TouchableOpacity
               activeOpacity={0.8}
+              onPress={() => this.props.navigation.navigate("Watchlist")}
               style={[styles.buttonContainer, styles.signupBtn]}
             >
               <Text style={styles.appButtonText}>Watchlist</Text>
@@ -84,6 +86,12 @@ const AppNavigator = createStackNavigator({
   },
   Stock: {
     screen: Stock,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  Watchlist: {
+    screen: Watchlist,
     navigationOptions: {
       headerShown: false,
     },

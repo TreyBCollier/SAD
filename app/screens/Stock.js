@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,6 +15,14 @@ import colours from "../config/colours";
 import ReactTable from 'react-table'
 import { Table, Row, Rows } from 'react-native-table-component';
 import stockData from "../files/data.json"
+import Spinner from 'react-native-loading-spinner-overlay';
+import watchlistJson from "../files/watchlist.json"
+import { ThemeConsumer } from "styled-components";
+
+
+
+
+
 
 
 const getCurrentDate=()=>{
@@ -29,22 +37,10 @@ const getCurrentDate=()=>{
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
-var array = [];
+var array = [69];
+var testPrice;
 
 
 class Stock extends React.Component {
@@ -54,15 +50,24 @@ class Stock extends React.Component {
     this.state = {
       data: [],
       tablePage: 0,
-
-      prices: []
+      price: " ",
+      previousPrice: " ",
+      tableData: [["",""],["",""]],
+      spinner: true,
+      isTableHidden: false,
+      isGraphHidden: true,
+      colour: "black",
       
     };
     this.data = [];
     this.stockArray = [];
     this.dataJSON
-    this.priceArray = [];
+    this.priceArray = [69];
     this.currentPrice = 0;
+    
+    this.handleLoad = this.handleLoad.bind(this);
+    this.handlePrice = this.handlePrice.bind(this);
+    
   }
 
   getData(){
@@ -74,6 +79,7 @@ class Stock extends React.Component {
       var stocks = result.stocks
       this.data = stocks
       this.dataJSON = stocks[1]
+    
 
       this.formatJSON()
 
@@ -94,102 +100,221 @@ class Stock extends React.Component {
     this.data = newArray;
 
   }
-
-  
   
 
   
+ componentDidMount() {
+  this.fetchAsync();
+  //this.interval = setInterval(() => this.fetchPrice(), 60000);
+}
+
+  handleLoad = (num) => {
+
+    this.setState(state => ({
+      price: num[0],
+      tableData: num[1]
+    }));
+    
+  }
+
+  handlePrice = (num) => {
+    console.log(num)
+    this.setState(state => ({
+      previousPrice: this.state.price,
+      price: num,
+    }));
+
+    if(this.state.price > this.state.previousPrice){
+      this.setState({
+        colour: "green"
+      });
+    }
+    if(this.state.price < this.state.previousPrice){
+      console.log("RED")
+      this.setState({
+        colour: "red"
+      });
+    }
+    if(this.state.price == this.state.previousPrice){
+      console.log("BLACK")
+      this.setState({
+        colour: "black"
+      });
+    
+    }
+
+    
+    
+    
+  }
+
+  async getArray(x, y){
+
+    var arrayIn = x;
+    var tableArray = [];
+    var i;
+    var day = 1;
+    for(i = arrayIn.length-2; i > 0; i--){
+      var myDate = new Date( y[i] *1000);
+      var date = "" + myDate.getDate() + "/" + myDate.getMonth() + "/" + myDate.getFullYear() + ""
+      var el = [date, x[i]]
+      tableArray.push(el)
+    }
+   
+    
+    return tableArray
+ 
+  }
+  
+  async fetchData(x){
+    var tempArray;
+    var testPrice;
+    var result;
+    var time;
+    const {params} = this.props.navigation.state;
+
+    var ticker = params.ticker;
+
+    x.addEventListener("readystatechange", function () {
+      if (this.readyState == 4) {
+        result = JSON.parse(this.responseText);
+        tempArray = result[ticker]['close'];
+        time = result[ticker]['timestamp'];
+        testPrice = tempArray[tempArray.length-1]
+      }
+    });
+    await this.sleep(750)
+    var priceArray = this.getArray(tempArray, time)
+    
+    return [testPrice, priceArray]
+  }
+
+  async getPrice(x){
+    var tempArray;
+    var testPrice;
+    var result;
+    const {params} = this.props.navigation.state;
+
+    var ticker = params.ticker;
+
+    x.addEventListener("readystatechange", function () {
+      if (this.readyState == 4) {
+        result = JSON.parse(this.responseText);
+        tempArray = result[ticker]['close'];
+        testPrice = tempArray[tempArray.length-1]
+      }
+    });
+    await this.sleep(750)
+    
+    return testPrice
+  }
+
+  async fetchAsync () {
+
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    const {params} = this.props.navigation.state;
+
+    var ticker = params.ticker;
+
+    var url = "https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/spark?symbols=" + ticker + "&range=2y&interval=1d"
+
+    xhr.open('get', url, true);
+    xhr.setRequestHeader("x-rapidapi-key", "de60c04d78msh37566ebd95793e5p1ae017jsnd330a739399f");
+    xhr.setRequestHeader("x-rapidapi-host", "yahoo-finance-low-latency.p.rapidapi.com");
+    xhr.send();
+    
+    var data = await this.fetchData(xhr)
+    var testPrice = data[0]
+    var testArray = data[1]['_W']
+   
+    
+    this.setState({
+      spinner: !this.state.spinner
+    });
+    
+    this.handleLoad([testPrice, testArray])
+  
+  }
+
+  async fetchPrice () {
+
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    const {params} = this.props.navigation.state;
+
+    var ticker = params.ticker;
+
+    var url = "https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/spark?symbols=" + ticker + "&range=2y&interval=1d"
+
+    xhr.open('get', url, true);
+    xhr.setRequestHeader("x-rapidapi-key", "de60c04d78msh37566ebd95793e5p1ae017jsnd330a739399f");
+    xhr.setRequestHeader("x-rapidapi-host", "yahoo-finance-low-latency.p.rapidapi.com");
+    xhr.send();
+    
+    var data = await this.getPrice(xhr)
+    var testPrice = data
+    
+    this.handlePrice(testPrice)
+  
+  }
+
+  sleep(ms) {
+    return new Promise(
+      resolve => setTimeout(resolve, ms)
+    );
+  }
+
+  toggleTable () {
+    this.setState({
+      isTableHidden: false,
+      isGraphHidden: true
+    })
+  }
+
+  toggleGraph () {
+    this.setState({
+      isTableHidden: true,
+      isGraphHidden: false
+    })
+  }
+  
+  addToWatchlist(companyTicker, companyName){
+    var jsonData = {
+      ticker: companyTicker,
+      name: companyName
+    }
+  
+
+  }
 
 
   render() {
 
-    function sleep(ms) {
-      return new Promise(
-        resolve => setTimeout(resolve, ms)
-      );
-    }
-    
-    function query(){
-      var ticker = "AAPL";
-      var name = "THIS NIIIIII";
-      
-      var url = "https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/spark?symbols=" + ticker + "&range=2y&interval=1d"
-      var apiResults = "";
-      var apiArray = [];
-      var apiArrayPrice = [];
-      const data = null;
-      const xhr = new XMLHttpRequest();
-      xhr.withCredentials = true;
-      xhr.addEventListener("readystatechange", function () {
-        if (this.readyState === this.DONE) {
-        
-          this.ticker = ticker;
-          this.name = name;
-
-          
-          
-          var result = JSON.parse(this.responseText);
-          
-        
-          var tempApiResults = result[ticker]['close']
-          apiResults = ""
-          var count = 0
-          tempApiResults.forEach(close => {
-            var c = close
-            apiResults = apiResults + " Day " + count  + " - " + c + "\n"
-            apiArray.push(getCurrentDate() + " - " + c)
-            apiArrayPrice.push(c)
-            count = count + 1
-          });
-          this.priceArray=apiArrayPrice;
-          array = apiArrayPrice
-          
-        
-          //saveAsJSON(tempApiResults, "APPL");
-
-          // This needs saving 
-          
-        }
-      });
-      xhr.open("GET", url);
-      xhr.setRequestHeader("x-rapidapi-key", "de60c04d78msh37566ebd95793e5p1ae017jsnd330a739399f");
-      xhr.setRequestHeader("x-rapidapi-host", "yahoo-finance-low-latency.p.rapidapi.com");
-      xhr.send(data);
-      
-    
-    }
-
-     function getPrice() {
-      console.log("TEST 1")
-       query();
-      
-      console.log(array)
-      return array[0]
-
-    }
-
-    // async function getPrice() {
-    //   console.log("TEST 1")
-    //   await query();
-      
-    //   console.log(array)
-    //   return array[0]
-
-    // }
-
-    
-    
-    
-    
     const { params } = this.props.navigation.state;
-    
-  
+
+    const PriceTable = () => (
+      <Table borderStyle={{borderWidth: 2, borderColor: '#b5b5b5'}}>
+                <Row data = {["Date", "Price"]} style={styles.head} textStyle={styles.text}/>
+                <Rows data = {this.state.tableData} textStyle={styles.text}/>
+      </Table>
+    )
+    const PriceGraph = () => (
+      <Text>Wag1 Fam</Text>
+    )
     
     return (
       
       <SafeAreaView
         style={{ flex: 1, alignContent: "center", justifyContent: "center", backgroundColor: 'white' }}
       >
+        <Spinner
+          visible={this.state.spinner}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{
@@ -212,6 +337,16 @@ class Stock extends React.Component {
             onPress={() => this.props.navigation.navigate("searchStocks")}
           />
 
+          <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => this.addToWatchlist(params.ticker, params.name)}
+              style={[styles.buttonContainer, styles.watchlistBtn]}
+            >
+              <Text style ={styles.watchlistButtonText}>Add to Watchlist</Text>
+            </TouchableOpacity>
+
+
+
           <View
             style={{
               flexDirection: "row",
@@ -228,18 +363,34 @@ class Stock extends React.Component {
 
             <View style={styles.searchBar}>
             <Text>
-              Current Price
+              {"Current Price - " + getCurrentDate()}
             </Text>
-            <Text style={styles.previousClose}>
-              {getPrice()}
+            <Text style={[styles.previousClose, {color: this.state.colour}]} >
+              {this.state.price}
             </Text>
             </View>
 
+            <View style={styles.splitButton}>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[styles.buttonContainerLeft, styles.tableBtn]}
+              onPress={() => this.toggleTable()}
+            >
+              <Text style={styles.appButtonText}>View Table</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[styles.buttonContainerRight, styles.graphBtn]}
+              onPress={() => this.toggleGraph()}
+            >
+              <Text style={styles.appButtonText}>View Graph</Text>
+            </TouchableOpacity>
+            </View>
+
             <View>
-              <Table>
-                <Row data = {["Ticker", "Price"]}/>
-                <Rows data = {this.getData()}/>
-              </Table>
+              {!this.state.isTableHidden && <PriceTable/>}
+              {!this.state.isGraphHidden && <PriceGraph/>}
             </View>
 
             
@@ -251,7 +402,39 @@ class Stock extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  topBar: {
+    width: "90%",
+    marginTop: "1.75%"
+  },
+
+  watchlistBtn: {
+    backgroundColor: "transparent",
+    borderWidth: 1.5,
+    borderColor: "black",
+    color: "black"
+  },
+
+  splitButton: {
+    flexDirection: "row",
+    marginBottom: "5%"
   
+  },
+  tableBtn: {
+    backgroundColor:"#cc171d",
+  },
+  graphBtn: {
+    backgroundColor: "#192f4f",
+  },
+  head: { 
+    height: 40, 
+    backgroundColor: '#d1d1d1' 
+  },
+  text: { 
+    margin: 6 
+  },
+  spinnerTextStyle: {
+    color: '#FFF'
+  },
   previousClose: {
     fontSize: 30,
     marginTop: "3%",
@@ -273,13 +456,48 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonContainer: {
-    marginTop: 1,
-
+    
+    elevation: 8,
     borderRadius: 10,
     paddingVertical: 0,
     paddingHorizontal: 5,
-    width: "90%",
-    height: "5%",
+    width: "50%",
+    alignSelf: "center",
+    justifyContent: "center",
+    position: "absolute",
+    textAlign: "center",
+    alignSelf: "flex-end",
+    marginTop: "2%",
+  },
+  watchlistButtonText: {
+    fontSize: RFPercentage(1.8),
+    color: "black",
+    fontWeight: "bold",
+    alignSelf: "center",
+  },
+
+  buttonContainerLeft: {
+    marginTop: 1,
+
+    borderBottomLeftRadius: 10,
+    borderTopLeftRadius: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 5,
+    width: "50%",
+    
+    alignSelf: "center",
+    justifyContent: "center",
+    backgroundColor: colours.email,
+  },
+  buttonContainerRight: {
+    marginTop: 1,
+
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 5,
+    width: "50%",
+    
     alignSelf: "center",
     justifyContent: "center",
     backgroundColor: colours.email,

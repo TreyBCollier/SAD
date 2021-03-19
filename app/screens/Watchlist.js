@@ -28,7 +28,7 @@ import { useNavigation } from '@react-navigation/native';
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-class SearchStocks extends React.Component {
+class Watchlist extends React.Component {
   constructor(props) {
     super(props);
 
@@ -53,14 +53,11 @@ class SearchStocks extends React.Component {
 
   componentDidMount(){
     this.loadData()
-    
   }
 
   loadData = async () => {    
     var data1 = tickers.split(', ');
     var data2 = names.split(', ');
-    this.filteredNameArray = data2;
-    this.filteredTickerArray = data1;
   
 
     this.setState({
@@ -70,62 +67,7 @@ class SearchStocks extends React.Component {
 
     this.tickerholder = data1; 
     this.nameholder = data2; 
-
-    
-
-    
-    
-    
-    
   };
-
-  filterlist(text) {
-    var filteredListName = this.nameholder.filter(name => name.includes(text));
-    var filteredListTicker = this.tickerholder.filter(name => name.includes(text));
-    var i;
-    var j;
-    var newNameListName = []
-    var newTickerListName = []
-    var newNameListTicker = []
-    var newTickerListTicker = []
-    var emptyList = []
-    for (i = 0; i < this.nameholder.length; i++) { 
-      for(j = 0; j < filteredListName.length; j++){
-        if(this.nameholder[i] == filteredListName[j]){
-          var nameText = this.nameholder[i];
-          var tickerText = this.tickerholder[i];
-          newNameListName.push(nameText)
-          newTickerListName.push(tickerText)
-        }
-      }
-    }
-    for (i = 0; i < this.tickerholder.length; i++) { 
-      for(j = 0; j < filteredListTicker.length; j++){
-        if(this.tickerholder[i] == filteredListTicker[j]){
-          var nameText = this.nameholder[i];
-          var tickerText = this.tickerholder[i];
-          newNameListTicker.push(nameText)
-          newTickerListTicker.push(tickerText)
-        }
-      }
-    }
-    
-    this.filteredNameArray = newNameListTicker.concat(newNameListName);
-    this.filteredTickerArray = newTickerListTicker.concat(newTickerListName)
-    if(text.length < 1){
-      this.filteredNameArray = this.state.name
-      this.filteredTickerArray = this.state.ticker
-    }
-  };
-
-  SampleFunction=(item)=>{
- 
-    Alert.alert(item);
- 
-  }
-
-  
-
  
 
 
@@ -169,36 +111,19 @@ class SearchStocks extends React.Component {
             }}
           >
             <Text
-              style={{
-                fontSize: RFPercentage(3),
-              }}
+              style={styles.heading}
             >
-              Search Stocks
+              Watchlist
             </Text>
             
           </View>
 
           
-            <View style={styles.searchBar}>
-
             
               
-            <SearchBar
-              placeholder="Ticker"
-              platform = "ios"
-              value={this.state.search}
-              onChangeText={(text) => {
-                this.filterlist(text)
-                this.setState({ search: text })
-              
-              }}
-
-
-            />
-              
-            </View>
+        
             <View>
-              { this.filteredNameArray.map((item, key)=>(
+              { this.nameholder.map((item, key)=>(
                 <TouchableOpacity 
                   style={styles.listItem}
                   onPress={() => this.props.navigation.navigate("Stock", {name: item, ticker: this.filteredTickerArray[key]},)}
@@ -207,7 +132,7 @@ class SearchStocks extends React.Component {
                     <View>
                     <Text 
                     style={styles.stockTicker} > 
-                      {this.filteredTickerArray[key] }
+                      {this.tickerholder[key] }
                       
                     </Text>
                     <View style={{
@@ -227,7 +152,7 @@ class SearchStocks extends React.Component {
                   
                   <Text 
                     style={styles.stockName} > 
-                      { this.filteredNameArray[key] }
+                      { item }
                       
                     </Text>
                     <View
@@ -256,6 +181,10 @@ class SearchStocks extends React.Component {
 const styles = StyleSheet.create({
   listItem: {
     width: "100%",
+  },
+  heading: {
+    fontSize: RFPercentage(3),
+    paddingBottom: "5%",
   },
   stockTicker: {
     fontSize: 30,
@@ -397,4 +326,4 @@ const barlevels = [
   },
 ];
 
-export default SearchStocks;
+export default Watchlist;
