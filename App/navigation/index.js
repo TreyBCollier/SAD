@@ -1,12 +1,5 @@
 import React from "react";
-import { Image } from "react-native";
-import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "@react-navigation/stack";
-
-import SignUpScreen from "../screens/SignUpScreen";
-import WelcomeScreen from "../screens/WelcomeScreen";
-
-import { theme } from "../constants";
 
 const Stack = createStackNavigator();
 
