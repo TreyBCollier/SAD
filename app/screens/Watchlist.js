@@ -7,14 +7,18 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from "react-native";
+
+// Importing additional  libraries used in the 'Stock' screen/class
 import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Importing styles used by the Stock class
 import styles from '../styles/watchlistStyles';
 
 class Watchlist extends React.Component {
   constructor(props) {
     super(props);
-
+    // Initialising all state variables
     this.state = {
       search: '',   
       ticker: [],   
@@ -28,6 +32,7 @@ class Watchlist extends React.Component {
     this.filteredTickerArray = [];
   }
 
+  // Functions to be called upon 'mount' of screen/class
   componentDidMount(){
     this.loadData()
   }
@@ -38,6 +43,7 @@ class Watchlist extends React.Component {
     );
   }
 
+  // Loads the company names and tickers from local storage and assigns them to variables
   loadData = async () => {    
 
     var data1 = []
@@ -61,7 +67,7 @@ class Watchlist extends React.Component {
     })
   };
 
-
+  // Assigning new values to state variables from query data
   handleLoad = (data1, data2) => {
     this.setState(state => ({
         ticker: data1, 
@@ -71,7 +77,7 @@ class Watchlist extends React.Component {
     this.nameholder = data2; 
   }
 
-
+  // Reads and returns everything in the watchlist file from local storage
   readWatchlist = async () => {
     try {
       const value = await AsyncStorage.getItem('../files/test.txt')

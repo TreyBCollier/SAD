@@ -12,7 +12,7 @@ export default class PriceGraph extends React.Component {
   }
 
     render() { 
-
+      // Assigns variables parsed from 'StockWatchlist'
       var data = this.props.data;
       var xMax = this.props.xMax;
       var yMin = this.props.yMin;
@@ -37,8 +37,9 @@ export default class PriceGraph extends React.Component {
         >
           <VerticalAxis tickCount={11} theme={{ labels: { formatter: (v) => v.toFixed(2) } }} />
           <HorizontalAxis tickCount={1} theme={{ labels: { formatter: (meta) => meta.toFixed(0) }}}/>
-          <Line
           
+          {/* First line on graph */}
+          <Line
           theme={{
             stroke: { color: '#cc171d', width: 5 }, scatter: { default: { width: 6, height: 6, rx: 2, color: '#ad1117' }},
              gradient: { from: { color: '#0f0', opacity: 0.5 }, to: { color: '#0f0', opacity: 0.5 } } }}

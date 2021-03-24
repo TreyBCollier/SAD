@@ -3,22 +3,24 @@ import {
   Text,
   View,
   ScrollView,
-  Dimensions,
   SafeAreaView,
   TouchableOpacity,
-  Alert
 } from "react-native";
+// Importing additional  libraries used in the 'Stock' screen/class
 import { Button, SearchBar } from "react-native-elements";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
+// Importing company ticker and name data
 import tickers from "../files/Ticker";
 import names from "../files/Name";
+
+// Importing styles used by the Stock class
 import styles from '../styles/searchStockStyles';
 
 class SearchStocks extends React.Component {
   constructor(props) {
     super(props);
-
+    // Initialising all state variables
     this.state = {
       search: '',   
       ticker: [],   
@@ -31,16 +33,18 @@ class SearchStocks extends React.Component {
     this.filteredTickerArray = [];
   }
 
+  // Functions to be called upon 'mount' of screen/class
   componentDidMount(){
     this.loadData()
   }
 
+  // Loads the company names and tickers from file and assigns them to variables
   loadData = async () => {    
+    // Data is stored as arrays so split by ','
     var data1 = tickers.split(', ');
     var data2 = names.split(', ');
     this.filteredNameArray = data2;
     this.filteredTickerArray = data1;
-  
 
     this.setState({
       ticker: data1, 
@@ -51,8 +55,11 @@ class SearchStocks extends React.Component {
     this.nameholder = data2; 
   };
 
-  filterlist(text) {
-    var filteredListName = this.nameholder.filter(name => name.includes(text));
+  // Method filters the list on screen depending on user input
+  filterlist(textIn) {
+    var text = textIn.toUpperCase();
+    // Filters Name and Ticker arrays based on user input
+    var filteredListName = this.nameholder.filter(name => name.toUpperCase().includes(text));
     var filteredListTicker = this.tickerholder.filter(name => name.includes(text));
     var i;
     var j;
@@ -61,6 +68,7 @@ class SearchStocks extends React.Component {
     var newNameListTicker = []
     var newTickerListTicker = []
     var emptyList = []
+    // Adjusting the Name list
     for (i = 0; i < this.nameholder.length; i++) { 
       for(j = 0; j < filteredListName.length; j++){
         if(this.nameholder[i] == filteredListName[j]){
@@ -71,6 +79,7 @@ class SearchStocks extends React.Component {
         }
       }
     }
+    // Adjusting the Ticker list
     for (i = 0; i < this.tickerholder.length; i++) { 
       for(j = 0; j < filteredListTicker.length; j++){
         if(this.tickerholder[i] == filteredListTicker[j]){
@@ -81,7 +90,7 @@ class SearchStocks extends React.Component {
         }
       }
     }
-    
+    // Combining Ticker and Name list with no duplicates
     this.filteredNameArray = newNameListTicker.concat(newNameListName);
     this.filteredTickerArray = newTickerListTicker.concat(newTickerListName)
     if(text.length < 1){
@@ -92,8 +101,7 @@ class SearchStocks extends React.Component {
 
   render() {
     this.arrayholder = [];
-
-    
+  
     return (
       
       <SafeAreaView
@@ -145,6 +153,7 @@ class SearchStocks extends React.Component {
               platform = "ios"
               value={this.state.search}
               onChangeText={(text) => {
+                // On change text, filter the list
                 this.filterlist(text)
                 this.setState({ search: text })
               }}
@@ -152,9 +161,11 @@ class SearchStocks extends React.Component {
               
             </View>
             <View>
+              {/* Mapping the values in the array into a list */}
               { this.filteredNameArray.map((item, key)=>(
                 <TouchableOpacity 
                   style={styles.listItem}
+                  // Parses variables to the 'Stock' class on navigation
                   onPress={() => this.props.navigation.navigate("Stock", {name: item, ticker: this.filteredTickerArray[key]},)}
                 >
                   

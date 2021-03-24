@@ -7,7 +7,7 @@ import { Chart, Line, Area, HorizontalAxis, VerticalAxis, Tooltip } from 'react-
 export default class CompareGraph extends React.Component { 
     
     render() { 
-
+      // Assigns variables parsed from 'StockWatchlist'
       var data1 = this.props.data1;
       var data2 = this.props.data2;
       var xMax = this.props.xMax;
@@ -31,14 +31,16 @@ export default class CompareGraph extends React.Component {
         >
           <VerticalAxis tickCount={11} theme={{ labels: { formatter: (v) => v.toFixed(2) } }} />
           <HorizontalAxis tickCount={5} />
+
+          {/* First line on graph */}
           <Line
-          
           theme={{
             stroke: { color: '#cc171d', width: 5 }, scatter: { default: { width: 8, height: 8, rx: 4, color: '#ad1117' }},
              gradient: { from: { color: '#0f0', opacity: 0.5 }, to: { color: '#0f0', opacity: 0.5 } } }}
           smoothing="cubic-spline"
           data={data1}
         />
+        {/* Second line on graph */}
         <Line
           theme={{ stroke: { color: '#224373', width: 5 }, scatter: { default: { width: 8, height: 8, rx: 4, color: '#192f4f' }},
            gradient: { from: { color: '#00f', opacity: 0.5 }, to: { color: '#00f', opacity: 0.5 } } }}
