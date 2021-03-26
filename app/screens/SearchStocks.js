@@ -4,8 +4,14 @@ import {
   View,
   ScrollView,
   SafeAreaView,
-  TouchableOpacity,
+  TouchableOpacity, 
+  Platform,
+  Alert
 } from "react-native";
+
+import {LogBox} from 'react-native';
+LogBox.ignoreAllLogs();
+
 // Importing additional  libraries used in the 'Stock' screen/class
 import { Button, SearchBar } from "react-native-elements";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
@@ -13,6 +19,7 @@ import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
 // Importing company ticker and name data
 import tickers from "../files/Ticker";
 import names from "../files/Name";
+import NetInfo from "@react-native-community/netinfo";
 
 // Importing styles used by the Stock class
 import styles from '../styles/searchStockStyles';
@@ -25,6 +32,8 @@ class SearchStocks extends React.Component {
       search: '',   
       ticker: [],   
       name: [],   
+      navTicker: "",
+      navName: ""
     };
 
     this.tickerholder = [];
@@ -99,6 +108,42 @@ class SearchStocks extends React.Component {
     }
   };
 
+  canNavigate   = (name, ticker) => {
+    var  connection = this.CheckConnectivity();
+    if(connection == false){
+      Alert.alert("You must connect to the internet to use this feature.");
+    }
+    else{
+      this.props.navigation.navigate("Stock", {name: name, ticker: ticker},)
+    }
+
+  }
+
+
+  CheckConnectivity = () => {
+    var connected = true;
+    // For Android devices
+    if (Platform.OS === "android") {
+      NetInfo.isConnected.fetch().then(isConnected => {
+        if (isConnected == false) {
+          connected = false;
+          Alert.alert("You are online!");
+        } 
+      });
+    } 
+    else {
+      // For iOS devices
+      var ios = NetInfo.addEventListener(state => {
+        state.isConnected
+      });
+    }
+    if(ios == false){
+      connected = false;
+    }
+
+    return connected;
+  };
+
   render() {
     this.arrayholder = [];
   
@@ -163,48 +208,55 @@ class SearchStocks extends React.Component {
             <View>
               {/* Mapping the values in the array into a list */}
               { this.filteredNameArray.map((item, key)=>(
-                <TouchableOpacity 
-                  style={styles.listItem}
-                  // Parses variables to the 'Stock' class on navigation
-                  onPress={() => this.props.navigation.navigate("Stock", {name: item, ticker: this.filteredTickerArray[key]},)}
-                >
+                <View > 
+                  <TouchableOpacity 
+                style={styles.listItem}
+                // Parses variables to the 'Stock' class on navigation
+                onPress={() => 
                   
-                    <View>
-                    <Text 
-                    style={styles.stockTicker} > 
-                      {this.filteredTickerArray[key] }
-                      
-                    </Text>
-                    <View style={{
-                          width: "100%",
-                          position: "absolute",
-                          alignItems: "flex-end",
-                          marginTop: "5%"
-                          
-                          
-                        }}>
-                    <Icon
-                        color="black"
-                        name="arrow-right"
-                        size={25}
-                      />
-                    </View>
-                  
+                  this.canNavigate(item, this.filteredTickerArray[key])
+                }
+              >
+                  <View>
                   <Text 
-                    style={styles.stockName} > 
-                      { this.filteredNameArray[key] }
-                      
-                    </Text>
-                    <View
-                      style={{
-                        borderBottomColor: 'grey',
-                        borderBottomWidth: 1,
-                        marginTop: "2%",
-                        marginBottom: "5%",
-                      }}
+                  
+                  style={styles.stockTicker} > 
+                    {this.filteredTickerArray[key] }
+                    
+                  </Text>
+                  <View style={{
+                        width: "100%",
+                        position: "absolute",
+                        alignItems: "flex-end",
+                        marginTop: "5%"
+                        
+                        
+                      }}>
+                  <Icon
+                      color="black"
+                      name="arrow-right"
+                      size={25}
                     />
-                    </View>
-                  </TouchableOpacity>)
+                  </View>
+                
+                <Text 
+                  style={styles.stockName}
+                  > 
+
+                    { item }
+                    
+                  </Text>
+                  <View
+                    style={{
+                      borderBottomColor: 'grey',
+                      borderBottomWidth: 1,
+                      marginTop: "2%",
+                      marginBottom: "5%",
+                    }}
+                  />
+                  </View>
+                </TouchableOpacity>
+                </View>)
               )}
             </View>
             

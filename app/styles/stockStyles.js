@@ -7,6 +7,54 @@ import {
   import colours from "../config/colours";
   
   const styles = StyleSheet.create({
+    rangeNumber: {
+      width: "100%",
+      alignSelf: "center",
+      textAlign: "center"
+    },
+    rangeButton7: {
+      marginTop: 1,
+      borderBottomLeftRadius: 10,
+      borderTopLeftRadius: 10,
+      paddingVertical: 7,
+      width: "25%",
+      textAlign: "center",
+      alignSelf: "center",
+      justifyContent: "center",
+      backgroundColor: "#ededed",
+      borderColor: "#d1d1d1",
+      borderWidth: 1
+    },
+    rangeButtonMid: {
+      marginTop: 1,
+      
+      paddingVertical: 7,
+      width: "25%",
+      textAlign: "center",
+      alignSelf: "center",
+      justifyContent: "center",
+      backgroundColor: "#ededed",
+      borderColor: "#d1d1d1",
+      borderTopWidth: 1,
+      borderBottomWidth: 1
+    },
+    rangeButton2Y: {
+      marginTop: 1,
+      borderBottomRightRadius: 10,
+      borderTopRightRadius: 10,
+      paddingVertical: 7,
+      width: "25%",
+      textAlign: "center",
+      alignSelf: "center",
+      justifyContent: "center",
+      backgroundColor: "#ededed",
+      borderColor: "#d1d1d1",
+      borderWidth: 1
+    },
+    range: {
+      width: "100%",
+      flexDirection: "row",
+    },
     topBar: {
         width: "90%",
         marginTop: "1.75%"

@@ -25,7 +25,7 @@ export default class CompareGraph extends React.Component {
             
           ]}
           padding={{ left: 40, bottom: 20, right: 20, top: 20 }}
-          xDomain={{ min: 0, max: 500 }}
+          xDomain={{ min: 0, max: xMax }}
           yDomain={{ min: yMin, max: yMax }}
           viewport={{ size: { width: 15 }, initialOrigin: {x: xMax-15} }}
         >

@@ -14,9 +14,12 @@ export default class PriceGraph extends React.Component {
     render() { 
       // Assigns variables parsed from 'StockWatchlist'
       var data = this.props.data;
+      var xMin = this.props.xMin;
       var xMax = this.props.xMax;
       var yMin = this.props.yMin;
       var yMax = this.props.yMax;
+      var viewPort = this.props.viewPort
+      var tickCount = this.props.tickCount
       var height = "50%";
       if(this.props.height){
         height = this.props.height
@@ -33,10 +36,10 @@ export default class PriceGraph extends React.Component {
           padding={{ left: 40, bottom: 20, right: 20, top: 20 }}
           xDomain={{ min: 0, max: xMax }}
           yDomain={{ min: yMin, max: yMax }}
-          viewport={{ size: { width: 15 }, initialOrigin: {x: xMax-15} }}
+          viewport={{ size: { width: viewPort }, initialOrigin: {x: xMax-15} }}
         >
           <VerticalAxis tickCount={11} theme={{ labels: { formatter: (v) => v.toFixed(2) } }} />
-          <HorizontalAxis tickCount={1} theme={{ labels: { formatter: (meta) => meta.toFixed(0) }}}/>
+          <HorizontalAxis tickCount={tickCount} theme={{ labels: { formatter: (v) => v.toFixed(0) }}}/>
           
           {/* First line on graph */}
           <Line

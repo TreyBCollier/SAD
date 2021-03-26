@@ -11,10 +11,13 @@ export default class PriceGraph extends React.Component {
 
       // Assigns variables parsed from 'Stock'
       var data = this.props.data;
+      var xMin = this.props.xMin;
       var xMax = this.props.xMax;
       var yMin = this.props.yMin;
       var yMax = this.props.yMax;
-      var height = "80%";
+      var viewPort = this.props.viewPort
+      var tickCount = this.props.tickCount
+      var height = "76%";
       if(this.props.height){
         height = this.props.height
       }
@@ -26,16 +29,17 @@ export default class PriceGraph extends React.Component {
             
           ]}
           padding={{ left: 40, bottom: 20, right: 20, top: 20 }}
-          xDomain={{ min: 0, max: xMax }}
+          xDomain={{ min: xMin, max: xMax }}
           yDomain={{ min: yMin, max: yMax }}
-          viewport={{ size: { width: 15 }, initialOrigin: {x: xMax-15} }}
+          viewport={{ size: { width: viewPort }, initialOrigin: {x: xMax-15} }}
         >
           <VerticalAxis tickCount={11} theme={{ labels: { formatter: (v) => v.toFixed(2) } }} />
-          <HorizontalAxis tickCount={1} theme={{ labels: { formatter: (meta) => meta.toFixed(0) }}}/>
+          <HorizontalAxis tickCount={tickCount} theme={{ labels: { formatter: (v) => v.toFixed(0) }}}/>
+          
           {/* First line on graph */}
           <Line
           theme={{
-            stroke: { color: '#cc171d', width: 5 }, scatter: { default: { width: 6, height: 6, rx: 2, color: '#ad1117' }},
+            stroke: { color: '#cc171d', width: 2 }, scatter: { default: { width: 0, height: 0, rx: 2, color: '#ad1117' }},
              gradient: { from: { color: '#0f0', opacity: 0.5 }, to: { color: '#0f0', opacity: 0.5 } } }}
           
           data={data}

@@ -15,6 +15,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import PriceGraph from "../components/graphSingle";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 // Importing styles used by the Stock class
 import styles from '../styles/stockStyles';
 
@@ -41,9 +42,14 @@ class Stock extends React.Component {
       isGraphHidden: true,
       colour: "black",
       graphData: [],
+      adjustGraphData: [],
+      constXMax: 0,
       xMax: 0,
       yMin: 0,
       yMax: 0,
+      xMin: 0,
+      tickCount: 504,
+      viewPort: 15,
       addIsHidden: false,
       removeIsHidden: true,
       
@@ -71,7 +77,8 @@ handleLoad = (num) => {
   this.setState(state => ({
     price: num[0],
     tableData: num[1],
-    graphData: num[2]
+    graphData: num[2],
+    adjustGraphData: num[2]
   }));
 }
 
@@ -131,6 +138,7 @@ async formatGraph(arr){
   var yMaxNum = (Math.max.apply(Math, prices))+5;
 
   this.setState({
+    constXMax: xMaxNum,
     xMax: xMaxNum,
     yMin: yMinNum,
     yMax: yMaxNum
@@ -358,12 +366,67 @@ readWatchlist = async () => {
 
     const RemoveFromWatch = () => (
       <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => this.removeFromWatchlist(params.ticker, params.name)}
-              style={[styles.buttonContainer, styles.watchlistBtn]}
-            >
-              <Text style ={styles.watchlistButtonText}>Remove from Watchlist</Text>
-            </TouchableOpacity>
+          activeOpacity={0.8}
+          onPress={() => this.removeFromWatchlist(params.ticker, params.name)}
+          style={[styles.buttonContainer, styles.watchlistBtn]}
+          >
+          <Text style ={styles.watchlistButtonText}>Remove from Watchlist</Text>
+      </TouchableOpacity>
+    )
+
+    const RangeSelect = () => (
+      <View style={styles.range}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => this.setState({
+            tickCount: 7,
+            viewPort: 7,
+            xMin: this.state.xMax-7,
+            adjustGraphData: this.state.graphData.slice(Math.max(this.state.graphData.length - 7, 0))
+          })}
+          style={styles.rangeButton7}
+          >
+          <Text style ={styles.rangeNumber}>7 Days</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => this.setState({
+            tickCount:15,
+            viewPort: 15,
+            xMin: this.state.xMax-30,
+            adjustGraphData: this.state.graphData.slice(Math.max(this.state.graphData.length - 30, 0))
+            
+          })}
+          style={styles.rangeButtonMid}
+          >
+          <Text style ={styles.rangeNumber}>30 Days</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => this.setState({
+            tickCount: 170,
+            viewPort:16,
+            xMin: this.state.xMax-365,
+            adjustGraphData: this.state.graphData.slice(Math.max(this.state.graphData.length - 365, 0))
+          })}
+          style={styles.rangeButtonMid}
+          >
+          <Text style ={styles.rangeNumber}>1 Year</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => this.setState({
+            tickCount:170,
+            viewPort: 15,
+            xMin: 0,
+            adjustGraphData: this.state.graphData
+          })}
+          style={styles.rangeButton2Y}
+          >
+          <Text style ={styles.rangeNumber}>2 Years</Text>
+      </TouchableOpacity>
+
+      </View>
     )
     
     
@@ -450,7 +513,8 @@ readWatchlist = async () => {
             <View>
             {/* View toggles between table and graph depending on state values */}
               {!this.state.isTableHidden && <PriceTable/>}
-              {!this.state.isGraphHidden && <PriceGraph data={this.state.graphData} xMax={this.state.xMax} yMin={this.state.yMin} yMax={this.state.yMax}/>}
+              {!this.state.isGraphHidden && <RangeSelect/>}
+              {!this.state.isGraphHidden && <PriceGraph data={this.state.adjustGraphData} tickCount={this.state.tickCount} viewPort={this.state.viewPort} xMin={this.state.xMin} xMax={this.state.xMax} yMin={this.state.yMin} yMax={this.state.yMax}/>}
             </View>
 
         </ScrollView>

@@ -8,6 +8,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import {LogBox} from 'react-native';
+LogBox.ignoreAllLogs();
+
 // Importing additional  libraries used in the 'Stock' screen/class
 import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -138,7 +141,8 @@ class Watchlist extends React.Component {
 
             <View>
               { this.nameholder.map((item, key)=>(
-                <TouchableOpacity 
+                <View key={item}>
+                  <TouchableOpacity 
                   style={styles.listItem}
                   onPress={() => this.props.navigation.navigate("StockWatchlist", {list: this.tickerholder, length: this.state.watchlistLength, name: item, ticker: this.tickerholder[key]})}
                 >
@@ -178,7 +182,9 @@ class Watchlist extends React.Component {
                       }}
                     />
                     </View>
-                  </TouchableOpacity>)
+                  </TouchableOpacity>
+                </View>
+                )
               )}
             </View>
 

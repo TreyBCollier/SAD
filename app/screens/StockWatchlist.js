@@ -39,13 +39,19 @@ class StockWatchlist extends React.Component {
       graph2Ticker: "",
       colour: "black",
       graphData: [],
+      adjustGraphData: [],
       graphData2: [],
+      adjustGraphData2: [],
+      constXMax: 0,
       xMax: 0,
+      xMin: 0,
       yMin: 0,
       yMax: 0,
       xMax2: 0,
       yMin2: 0,
       yMax2: 0,
+      tickCount: 504,
+      viewPort: 15,
       addIsHidden: true,
       removeIsHidden: false,
       dropdownSelect: 'None',
@@ -84,6 +90,7 @@ handleLoad = (arr) => {
   this.setState(state => ({
     tableData: tableData,
     graphData: graphData,
+    adjustGraphData: graphData,
     spinner: false,
     price: tableData[0][1],
     dropdownItems: arr[2]
@@ -127,6 +134,7 @@ async formatGraph(arr){
   var yMaxNum = (Math.max.apply(Math, prices))+5;
 
   this.setState({
+    constXMaxL: xMaxNum,
     xMax: xMaxNum,
     yMin: yMinNum,
     yMax: yMaxNum
@@ -338,7 +346,7 @@ readWatchlistData = async (ticker, name) => {
         yMin2: this.state.yMin,
         xMax2: this.state.xMax,
         graph2Ticker: value,
-        graphKeyIsHidden: false,
+        graphKeyIsHidden: true,
         })
 
     var data = []
@@ -368,9 +376,11 @@ readWatchlistData = async (ticker, name) => {
         
         this.setState({
             graphData2: graph2,
+            adjustGraphData2: graph2,
             isGraphHidden: true,
             isGraph2Visible: false,
-            dropdownSelect: value
+            dropdownSelect: value,
+            graphKeyIsHidden: false
             })
     }
     else{
@@ -440,6 +450,69 @@ readWatchlistData = async (ticker, name) => {
     dropDownStyle={{backgroundColor: '#fafafa'}}
     onChangeItem={item => {this.changeGraph(item.value); this.setState({dropdownSelect: item.value})}}
 />
+    )
+
+    const RangeSelect = () => (
+      <View style={styles.range}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => this.setState({
+            tickCount: 7,
+            viewPort: 7,
+            xMin: this.state.xMax-7,
+            xMin2: this.state.xMax2-7,
+            adjustGraphData: this.state.graphData.slice(Math.max(this.state.graphData.length - 7, 0)),
+            adjustGraphData2: this.state.graphData2.slice(Math.max(this.state.graphData2.length - 7, 0))
+          })}
+          style={styles.rangeButton7}
+          >
+          <Text style ={styles.rangeNumber}>7 Days</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => this.setState({
+            tickCount:15,
+            viewPort: 15,
+            xMin: this.state.xMax-30,
+            xMin2: this.state.xMax2-30,
+            adjustGraphData: this.state.graphData.slice(Math.max(this.state.graphData.length - 30, 0)),
+            adjustGraphData2: this.state.graphData2.slice(Math.max(this.state.graphData2.length - 30, 0))
+            
+          })}
+          style={styles.rangeButtonMid}
+          >
+          <Text style ={styles.rangeNumber}>30 Days</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => this.setState({
+            tickCount: 170,
+            viewPort:16,
+            xMin: this.state.xMax-365,
+            xMin2: this.state.xMax2-365,
+            adjustGraphData: this.state.graphData.slice(Math.max(this.state.graphData.length - 365, 0)),
+            adjustGraphData2: this.state.graphData2.slice(Math.max(this.state.graphData2.length - 365, 0))
+          })}
+          style={styles.rangeButtonMid}
+          >
+          <Text style ={styles.rangeNumber}>1 Year</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => this.setState({
+            tickCount:170,
+            viewPort: 15,
+            xMin: 0,
+            xMin2: 0,
+            adjustGraphData: this.state.graphData,
+            adjustGraphData2: this.state.graphData2
+          })}
+          style={styles.rangeButton2Y}
+          >
+          <Text style ={styles.rangeNumber}>2 Years</Text>
+      </TouchableOpacity>
+
+      </View>
     )
 
     
@@ -527,9 +600,10 @@ readWatchlistData = async (ticker, name) => {
               {/* View toggles between table, graph and double graph based on state values */}
               {!this.state.isTableHidden && <PriceTable/>}
               {this.state.isTableHidden && <Dropdown/>}
+              {this.state.isTableHidden && <RangeSelect/>}
               {!this.state.graphKeyIsHidden && <GraphKey/>}
-              {!this.state.isGraphHidden && <PriceGraph data={this.state.graphData} xMax={this.state.xMax} yMin={this.state.yMin} yMax={this.state.yMax} height={"75%"}/>}
-              {!this.state.isGraph2Visible && <PriceGraphDouble data1={this.state.graphData} data2={this.state.graphData2} xMax={this.state.xMax2} yMin={this.state.yMin2} yMax={this.state.yMax2} height={"68%"}/>}
+              {!this.state.isGraphHidden && <PriceGraph data={this.state.adjustGraphData} tickCount={this.state.tickCount} viewPort={this.state.viewPort} xMin={this.state.xMin} xMax={this.state.xMax} yMin={this.state.yMin} yMax={this.state.yMax} height={"70%"}/>}
+              {!this.state.isGraph2Visible && <PriceGraphDouble data1={this.state.adjustGraphData} data2={this.state.adjustGraphData2} xMax={this.state.xMax2} yMin={this.state.yMin2} yMax={this.state.yMax2} height={"68%"}/>}
               
             </View>
 

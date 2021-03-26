@@ -6,7 +6,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "test": "jest --watchAll"
+    "test": "jest"
   },
   "jest": {
     "preset": "jest-expo"
@@ -15,6 +15,7 @@
     "@expo/vector-icons": "^12.0.0",
     "@react-native-async-storage/async-storage": "^1.14.1",
     "@react-native-community/masked-view": "0.1.10",
+    "@react-native-community/netinfo": "^6.0.0",
     "@react-navigation/bottom-tabs": "5.11.2",
     "@react-navigation/native": "~5.8.10",
     "@react-navigation/stack": "~5.12.8",
@@ -32,8 +33,10 @@
     "expo-splash-screen": "~0.8.0",
     "expo-status-bar": "^1.0.3",
     "expo-web-browser": "~8.6.0",
+    "jest": "^26.6.3",
     "react": "16.13.1",
     "react-data-table-component": "^6.11.7",
+    "react-detect-offline": "^2.4.3",
     "react-dom": "16.13.1",
     "react-json-table": "^0.1.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
@@ -60,7 +63,8 @@
     "rn-content-loader": "0.0.6",
     "searchable-flatlist": "0.0.4",
     "styled-components": "^5.2.1",
-    "write-json-file": "^4.3.0"
+    "write-json-file": "^4.3.0",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
